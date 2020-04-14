@@ -33,7 +33,7 @@ function getUserRepos(user) {
       }
     })
     .catch(function (error) {
-        alert(Unable to connect to Github ")
+        alert('Unable to connect to Github');
         })
     };
 
