@@ -24,47 +24,60 @@ function getUserRepos(user) {
 
   // make api request
   fetch(apiUrl).then(function (response) {
-    response.json().then(function (data) {
-      displayRepos(data, user);
+      if (response.ok) {
+        response.json().then(function (data) {
+          displayRepos(data, user);
+        });
+      } else {
+        alert('Error: ' + response.statusText);
+      }
     })
-  })
-};
+    .catch(function (error) {
+        alert(Unable to connect to Github ")
+        })
+    };
 
-usernameForm.addEventListener('submit', formSubmitHandler);
+  usernameForm.addEventListener('submit', formSubmitHandler);
 
-function displayRepos(repos, searchTerm) {
-  // clear old content
-  repoListContainer.textContent = '';
-  repoSearchTerm.textContent = searchTerm;
 
-  // loop over repo data
-  for (var i = 0; i < repos.length; i++) {
-    // format repo name
-    var formatRepoName = repos[i].owner.login + '/' + repos[i].name;
-    // create container for each repo
-    var repoContainer = document.createElement('div');
-    repoContainer.classList = 'list-item flex-row justify-space-between align-center';
-    // create a span element for repo name
-    var repoName = document.createElement('span');
-    repoName.textContent = formatRepoName;
+  function displayRepos(repos, searchTerm) {
+    // clear old content
+    repoListContainer.textContent = '';
+    repoSearchTerm.textContent = searchTerm;
 
-    repoContainer.appendChild(repoName);
-
-    // create status elements
-    var repoStatus = document.createElement('span');
-    repoStatus.classList = 'flex-row align-center';
-
-    // check current repo for issues
-    if (repos[i].open_issues_count > 0) {
-      repoStatus.innerHTML = '<i class="fas fa-times status-icon icon-danger"></i>' + repos[i].open_issues_count + ' issue(s)';
-    } else {
-      repoStatus.innerHTML = '<i class="fas fa-check-square status-icon icon-success"></i>';
+    // check if api returned any repos
+    if (repos.length === 0) {
+      repoListContainer.textContent = 'No repositories found.';
+      return;
     }
 
-    // append to container
-    repoContainer.appendChild(repoStatus);
+    // loop over repo data
+    for (var i = 0; i < repos.length; i++) {
+      // format repo name
+      var formatRepoName = repos[i].owner.login + '/' + repos[i].name;
+      // create container for each repo
+      var repoContainer = document.createElement('div');
+      repoContainer.classList = 'list-item flex-row justify-space-between align-center';
+      // create a span element for repo name
+      var repoName = document.createElement('span');
+      repoName.textContent = formatRepoName;
 
-    // append container to DOM
-    repoListContainer.appendChild(repoContainer);
-  }
-};
+      repoContainer.appendChild(repoName);
+
+      // create status elements
+      var repoStatus = document.createElement('span');
+      repoStatus.classList = 'flex-row align-center';
+
+      // check current repo for issues
+      if (repos[i].open_issues_count > 0) {
+        repoStatus.innerHTML = '<i class="fas fa-times status-icon icon-danger"></i>' + repos[i].open_issues_count + ' issue(s)';
+      } else {
+        repoStatus.innerHTML = '<i class="fas fa-check-square status-icon icon-success"></i>';
+      }
+
+      // append to container
+      repoContainer.appendChild(repoStatus);
+      // append container to DOM
+      repoListContainer.appendChild(repoContainer);
+    }
+  };
